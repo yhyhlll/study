@@ -1,0 +1,32 @@
+#!/bin/sh
+
+ #day =`date -d " -1 day" +%Y%m%d`
+ #day1 =`date -d " -2 day" +%Y%m%d`
+ #date =`date -d " -1 day" +%Y-%m-%d`
+
+password="bigdata#2023"
+sql="delete from bigdata.alert_per;delete from bigdata.alert_as_per;delete from bigdata.alert_kmtotal_per;delete from bigdata.alert_qvin;delete from bigdata.alert_province;delete from bigdata.wuling_alert_cnt;delete from bigdata.alert_middle;delete from bigdata.alert_month"
+a=$(mysql -hbasemdb.ptcloud.t.home -ubigdata -p${password} -s -e "$sql")
+
+
+
+
+echo "${day}"
+echo "${day1}"
+echo "${date}"
+export HIVE_AUX_JARS_PATH=/usr/local/service/hbase/lib/*
+#hive  --hiveconf day=${day} --hiveconf day1=${day1} --hiveconf date=${date}   -f dwd/wuling_displayplatform_alerts3/wuling_displayplatform_alerts3.sql
+
+
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_per --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_per/pdate=${day} --update-key invoice_month --update-mode allowinsert
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_month --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw//dw_alert_month/pdate=${day}
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_as_per --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_as_per/pdate=${day} --update-key projectname --update-mode allowinsert
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_kmtotal_per --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_kmtotal_per/pdate=${day} --update-key kmtotal --update-mode allowinsert
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_qvin --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_qvin/pdate=${day} --update-key cycle --update-mode allowinsert
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_province --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_province/pdate=${day} --update-key province --update-mode allowinsert
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table wuling_alert_cnt --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_cnt/pdate=${day}
+sqoop-export --connect "jdbc:mysql://basemdb.ptcloud.t.home:3306/bigdata?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table alert_middle --username bigdata --password bigdata#2023     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dw/dw_alert_middle/pdate=${day}
+
+##c62故障同步
+sqoop-export --connect "jdbc:mysql://tspmdb.ptcloud.t.home:3306/msoptaccount?useUnicode=true&useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai" --table c62_alert --username msoptaccount --password "B9cV&XzR8*"     --input-fields-terminated-by '\001'  --export-dir cosn://pateo-dataprod-yarn-1319834899/hive/dwd/dwd_c62_alerts
+
