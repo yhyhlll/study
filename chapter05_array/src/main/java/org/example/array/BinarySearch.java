@@ -24,5 +24,8 @@ public class BinarySearch {
             System.out.println("没找到。。。。。");
         }
 
+
+        
+
     }
 }
